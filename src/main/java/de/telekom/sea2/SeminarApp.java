@@ -1,10 +1,15 @@
 package de.telekom.sea2;
 
+import java.sql.*;
+
 import de.telekom.sea2.model.Person;
+import de.telekom.sea2.persistence.PersonsRepository;
 
 public class SeminarApp {
 	
 	public static SeminarApp theInstance;
+	private Connection connection;
+	private ResultSet resultSet;
 	
 	private SeminarApp() {
 	}
@@ -16,16 +21,24 @@ public class SeminarApp {
 		return theInstance;
 	}
 	
-	public void run(String[] args) {
+	public void run(String[] args) throws ClassNotFoundException, SQLException {
 		
+		dbloader();
 //		menu();
-		test();
+//		test();
+		testdb();
 		
+	}
+	
+	private void dbloader() throws ClassNotFoundException, SQLException {
+		final String DRIVER = "org.mariadb.jdbc.Driver";
+		Class.forName(DRIVER);
+		this.connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/seadb","seauser","seapass");
 	}
 	
 	private void test() {
 		
-		System.out.println("*** Start Menu ***");
+		System.out.println("*** Start Test ***");
 		
 		Person thomas = new Person();
 		thomas.setFirstname("Thomas");
@@ -37,6 +50,20 @@ public class SeminarApp {
 		System.out.println(thomas.getSalutation() + " " + thomas.getFirstname() + " " + thomas.getLastname());
 		System.out.println(bianca.getSalutation() + " " + bianca.getFirstname() + " " + bianca.getLastname());
 		
+		System.out.println("*** Test Ende ***");
+	}
+	
+	private void testdb() throws ClassNotFoundException, SQLException {
 		
+		PersonsRepository pr = new PersonsRepository(connection);
+		this.resultSet = pr.getAll();
+		System.out.println(this.resultSet);
+		
+		while(resultSet.next()) {
+			System.out.print("ID " + resultSet.getLong(1) + ", ");
+			System.out.print("Anrede " + resultSet.getShort(2) + ", ");
+			System.out.print("Vorname " + resultSet.getString(3) + ", ");
+			System.out.println("Nachname " + resultSet.getString(4));
+		}
 	}
 }
