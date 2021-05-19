@@ -31,9 +31,14 @@ public class SeminarApp {
 	}
 	
 	private void dbloader() throws ClassNotFoundException, SQLException {
+		
+		System.out.println("*** Datenbank verbinden ***");
+		
 		final String DRIVER = "org.mariadb.jdbc.Driver";
 		Class.forName(DRIVER);
 		this.connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/seadb","seauser","seapass");
+		
+		System.out.println("*** Datenbank verbunden ***");
 	}
 	
 	private void test() {
@@ -55,6 +60,8 @@ public class SeminarApp {
 	
 	private void testdb() throws ClassNotFoundException, SQLException {
 		
+		System.out.println("*** Start Test DB ***");
+		
 		PersonsRepository pr = new PersonsRepository(connection);
 		this.resultSet = pr.getAll();
 		System.out.println(this.resultSet);
@@ -65,5 +72,8 @@ public class SeminarApp {
 			System.out.print("Vorname " + resultSet.getString(3) + ", ");
 			System.out.println("Nachname " + resultSet.getString(4));
 		}
+		
+		System.out.println("*** Test DB Ende ***");
+		
 	}
 }
