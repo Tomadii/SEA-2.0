@@ -11,10 +11,10 @@ public class Person {
 	public Person() {
 	}
 	
-	public Person(final Salutation salutation, final String firstname, final String lastname) {
+	public Person(final String salutation, final String firstname, final String lastname) {
 		this.firstname = firstname;
 		this.lastname = lastname;
-		this.salutation = salutation;
+		this.salutation = Salutation.fromString(salutation);
 	}
 	
 	public String getFirstname() {
@@ -37,8 +37,8 @@ public class Person {
 		return salutation;
 	}
 
-	public void setSalutation(Salutation salutation) {
-		this.salutation = salutation;
+	public void setSalutation(final String string) {
+		this.salutation = Salutation.fromString(string);
 	}
 	
 }
