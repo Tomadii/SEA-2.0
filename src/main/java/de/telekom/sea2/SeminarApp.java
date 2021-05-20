@@ -69,13 +69,13 @@ public class SeminarApp {
 		// create(Person)
 		System.out.println("--- create(Person) ---");
 		
-		person = new Person("F", "Bianca", "Horchem");
-		person.setId(5L);
-		System.out.println("Person " + person + " angelegt = " + personsRepository.create(person));
-		person = new Person("M", "Thomas", "Horchem");
-		Person delPerson = person;
-		person.setId(6L);
-		System.out.println("Person " + person + " angelegt = " + personsRepository.create(person));
+//		person = new Person(5L, "m", "Bianca", "Horchem");
+//		person.setId(5L);
+//		System.out.println("Person " + person + " angelegt = " + personsRepository.create(person));
+//		person = new Person("M", "Thomas", "Horchem");
+//		Person delPerson = person;
+//		person.setId(6L);
+//		System.out.println("Person " + person + " angelegt = " + personsRepository.create(person));
 		
 		// get(long)
 		System.out.println("--- get(long) ---");
@@ -84,8 +84,15 @@ public class SeminarApp {
 		System.out.println(person.getId() + " " + person.getSalutation() + " " + person.getFirstname() + " " + person.getLastname());
 		person = personsRepository.get(6L);
 		System.out.println(person.getId() + " " + person.getSalutation() + " " + person.getFirstname() + " " + person.getLastname());
-					
-		// getAll
+		
+		// update
+		System.out.println("--- update(Person) ---");
+		
+		person = new Person(5L, "F", "Bianca", "Horchem");
+		System.out.println("Person " + person + " korrigiert = " + personsRepository.update(person));
+		
+		
+		// getAll()
 //		PersonsRepository pr = new PersonsRepository(connection);
 //		this.resultSet = pr.getAll();
 //		System.out.println(this.resultSet);
@@ -101,13 +108,17 @@ public class SeminarApp {
 		System.out.println("--- deleteId(long) ---");
 		
 		long del = 5L;
-		System.out.println("Person " + del + " gelöscht = " + personsRepository.deleteId(del));
+//		System.out.println("Person " + del + " gelöscht = " + personsRepository.deleteId(del));
 		
 		// deletePerson(Person)
 		System.out.println("--- deletePerson(Person) ---");
 		
-		System.out.println("Person " + delPerson + " gelöscht = " + personsRepository.deletePerson(delPerson));
+//		System.out.println("Person " + delPerson + " gelöscht = " + personsRepository.deletePerson(delPerson));
 		
+		// deleteAll
+		System.out.println("--- deleteAll() ---");
+		
+//		System.out.println("alle Personen gelöscht = " + personsRepository.deleteAll());
 		
 		System.out.println("*** Test DB Ende ***");
 		

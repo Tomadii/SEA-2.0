@@ -18,6 +18,13 @@ public class Person extends IdCounter {
 		this.salutation = Salutation.fromString(salutation);
 	}
 	
+	public Person(final long id, final String salutation, final String firstname, final String lastname) {
+		setId(id);
+		this.firstname = firstname;
+		this.lastname = lastname;
+		this.salutation = Salutation.fromString(salutation);		
+	}
+	
 	public String getFirstname() {
 		return firstname;
 	}

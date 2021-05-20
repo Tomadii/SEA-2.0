@@ -19,7 +19,10 @@ public class PersonsRepository {
 		return true;
 	}
 	
-	public boolean update(Person person) {
+	public boolean update(Person person) throws SQLException {
+		long personId = person.getId();
+		deleteId(personId);
+		create(person);
 		return true;
 	}
 
@@ -51,7 +54,8 @@ public class PersonsRepository {
 		return true;
 	}
 	
-	public boolean deleteAll() {
+	public boolean deleteAll() throws SQLException {
+		statement.executeQuery( "delete from personen");
 		return true;
 	}
 	
