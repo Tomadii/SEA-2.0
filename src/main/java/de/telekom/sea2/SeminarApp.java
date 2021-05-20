@@ -25,7 +25,7 @@ public class SeminarApp {
 		
 		dbloader();
 //		menu();
-//		test();
+		test();
 		testdb();
 		
 	}
@@ -52,8 +52,8 @@ public class SeminarApp {
 		
 		Person bianca = new Person("F", "Bianca", "Horchem");
 		
-		System.out.println(thomas.getSalutation() + " " + thomas.getFirstname() + " " + thomas.getLastname());
-		System.out.println(bianca.getSalutation() + " " + bianca.getFirstname() + " " + bianca.getLastname());
+		System.out.println(thomas.getId() + " " + thomas.getSalutation() + " " + thomas.getFirstname() + " " + thomas.getLastname());
+		System.out.println(bianca.getId() + " " + bianca.getSalutation() + " " + bianca.getFirstname() + " " + bianca.getLastname());
 		
 		System.out.println("*** Test Ende ***");
 	}

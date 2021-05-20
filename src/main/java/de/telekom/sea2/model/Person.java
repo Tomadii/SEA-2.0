@@ -2,13 +2,14 @@ package de.telekom.sea2.model;
 
 import de.telekom.sea2.looup.Salutation;
 
-public class Person {
+public class Person extends IdCounter {
 
 	private String firstname;
 	private String lastname;
 	private Salutation salutation;
 
 	public Person() {
+		
 	}
 	
 	public Person(final String salutation, final String firstname, final String lastname) {
