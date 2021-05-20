@@ -1,6 +1,8 @@
 package de.telekom.sea2.persistence;
 
 import java.sql.*;
+import java.util.ArrayList;
+
 import de.telekom.sea2.model.Person;
 
 public class PersonsRepository {
@@ -14,49 +16,77 @@ public class PersonsRepository {
 	}
 	
 	public boolean create(Person person) throws SQLException {
-		short salutation = person.getSalutation().toShort();
-		statement.executeQuery("insert into personen (ID, ANREDE, VORNAME, NACHNAME) VALUES (" + person.getId() + "," + salutation + ",'" + person.getFirstname() + "','" + person.getLastname() + "')");
+		PreparedStatement preparedStatement = connection.prepareStatement("insert into personen (ID, ANREDE, VORNAME, NACHNAME) VALUES ( ?, ?, ?, ? )");
+			preparedStatement.setLong(1, person.getId());
+			preparedStatement.setShort(2, person.getSalutation().toShort());
+			preparedStatement.setString(3, person.getFirstname());
+			preparedStatement.setString(4, person.getLastname());
+			preparedStatement.execute();
 		return true;
 	}
 	
 	public boolean update(Person person) throws SQLException {
-		long personId = person.getId();
-		deleteId(personId);
-		create(person);
+		PreparedStatement preparedStatement = connection.prepareStatement("update personen set anrede=?, vorname=?, nachname=? where id=? ");
+			preparedStatement.setShort(1, person.getSalutation().toShort());
+			preparedStatement.setString(2, person.getFirstname());
+			preparedStatement.setString(3, person.getLastname());
+			preparedStatement.setLong(4, person.getId());
+			preparedStatement.execute();
 		return true;
 	}
 
-	public Person get(long ID) throws SQLException {
-		ResultSet resultSet = statement.executeQuery( "select * from personen where id = '" + ID + "'");
+	public Person get(long id) throws SQLException {
+		PreparedStatement preparedStatement = connection.prepareStatement("select * from personen where id=? ");
+			preparedStatement.setLong(1, id);
 		
-		Person person = new Person();
-		resultSet.next();
-		person.setId(resultSet.getLong(1));
-		person.setSalutation(resultSet.getShort(2));
-		person.setFirstname(resultSet.getString(3));
-		person.setLastname(resultSet.getString(4));
+		ResultSet resultSet = preparedStatement.executeQuery();
+			resultSet.next();
+			Person person = new Person();	
+			person.setId(resultSet.getLong(1));
+			person.setSalutation(resultSet.getShort(2));
+			person.setFirstname(resultSet.getString(3));
+			person.setLastname(resultSet.getString(4));
 		
 		return person;
 	}
 	
-	public ResultSet getAll() throws SQLException {
+	public ArrayList<Person> getAll() throws SQLException {
 		ResultSet resultSet = statement.executeQuery( "select * from personen");
-		return resultSet;
+		
+		ArrayList<Person> persons = new ArrayList<Person>();
+		Person person;
+		
+		while (resultSet.next()) {
+			person = new Person();
+			person.setId(resultSet.getLong(1));
+			person.setSalutation(resultSet.getShort(2));
+			person.setFirstname(resultSet.getString(3));
+			person.setLastname(resultSet.getString(4));
+			persons.add(person);
+		}
+		return persons;
 	}
 	
 	public boolean deleteId(long id) throws SQLException {
-		statement.executeQuery( "delete from personen where id=" + id);
+		PreparedStatement preparedStatement = connection.prepareStatement("delete from personen where id = ? ");
+			preparedStatement.setLong(1, id);
+			preparedStatement.execute();
 		return true;
 	}
 	
 	public boolean deletePerson(Person person) throws SQLException {
-		deleteId(person.getId());
-		return true;
+		return deleteId(person.getId());
 	}
 	
 	public boolean deleteAll() throws SQLException {
 		statement.executeQuery( "delete from personen");
 		return true;
+	}
+	
+	public long maxId() throws SQLException {
+		ResultSet resultSet = statement.executeQuery( "select max(id) from personen" );
+		resultSet.next();
+		return resultSet.getLong(1);
 	}
 	
 }
