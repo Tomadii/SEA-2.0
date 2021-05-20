@@ -25,6 +25,20 @@ public enum Salutation {
 		}
 	}
 	
+	public static Salutation fromShort(Short s ) {
+		switch ( s ) {
+			case 1:
+				return FRAU;
+			case 2:
+				return HERR;
+			case 3:
+				return DIVERS;
+			default:
+				throw new IllegalArgumentException("Unerwarteter Wert: " + s);
+		
+		}
+	}
+	
 	@Override
 	public String toString() {
 		switch (this) {
@@ -39,4 +53,17 @@ public enum Salutation {
 		}
 	}
 	
+	public short toShort() {
+		switch (this) {
+		case FRAU:
+			return 1;
+		case HERR:
+			return 2;
+		case DIVERS:
+			return 3;
+		default:
+			throw new IllegalArgumentException("Unerwarteter Fall");
+		}
+	}
+
 }

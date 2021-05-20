@@ -10,6 +10,8 @@ public class SeminarApp {
 	public static SeminarApp theInstance;
 	private Connection connection;
 	private ResultSet resultSet;
+	private PersonsRepository personsRepository;
+	private Person person;
 	
 	private SeminarApp() {
 	}
@@ -25,7 +27,7 @@ public class SeminarApp {
 		
 		dbloader();
 //		menu();
-		test();
+//		test();
 		testdb();
 		
 	}
@@ -37,6 +39,7 @@ public class SeminarApp {
 		final String DRIVER = "org.mariadb.jdbc.Driver";
 		Class.forName(DRIVER);
 		this.connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/seadb","seauser","seapass");
+		personsRepository = new PersonsRepository(connection);
 		
 		System.out.println("*** Datenbank verbunden ***");
 	}
@@ -61,17 +64,50 @@ public class SeminarApp {
 	private void testdb() throws ClassNotFoundException, SQLException {
 		
 		System.out.println("*** Start Test DB ***");
+//		PersonsRepository pr = new PersonsRepository(connection);
 		
-		PersonsRepository pr = new PersonsRepository(connection);
-		this.resultSet = pr.getAll();
-		System.out.println(this.resultSet);
+		// create(Person)
+		System.out.println("--- create(Person) ---");
 		
-		while(resultSet.next()) {
-			System.out.print("ID " + resultSet.getLong(1) + ", ");
-			System.out.print("Anrede " + resultSet.getShort(2) + ", ");
-			System.out.print("Vorname " + resultSet.getString(3) + ", ");
-			System.out.println("Nachname " + resultSet.getString(4));
-		}
+		person = new Person("F", "Bianca", "Horchem");
+		person.setId(5L);
+		System.out.println("Person " + person + " angelegt = " + personsRepository.create(person));
+		person = new Person("M", "Thomas", "Horchem");
+		Person delPerson = person;
+		person.setId(6L);
+		System.out.println("Person " + person + " angelegt = " + personsRepository.create(person));
+		
+		// get(long)
+		System.out.println("--- get(long) ---");
+		
+		person = personsRepository.get(5L);
+		System.out.println(person.getId() + " " + person.getSalutation() + " " + person.getFirstname() + " " + person.getLastname());
+		person = personsRepository.get(6L);
+		System.out.println(person.getId() + " " + person.getSalutation() + " " + person.getFirstname() + " " + person.getLastname());
+					
+		// getAll
+//		PersonsRepository pr = new PersonsRepository(connection);
+//		this.resultSet = pr.getAll();
+//		System.out.println(this.resultSet);
+//		
+//		while(resultSet.next()) {
+//			System.out.print("ID " + resultSet.getLong(1) + ", ");
+//			System.out.print("Anrede " + resultSet.getShort(2) + ", ");
+//			System.out.print("Vorname " + resultSet.getString(3) + ", ");
+//			System.out.println("Nachname " + resultSet.getString(4));
+//		}
+		
+		// deleteId(long)
+		System.out.println("--- deleteId(long) ---");
+		
+		long del = 5L;
+		System.out.println("Person " + del + " gelöscht = " + personsRepository.deleteId(del));
+		
+		// deletePerson(Person)
+		System.out.println("--- deletePerson(Person) ---");
+		
+		System.out.println("Person " + delPerson + " gelöscht = " + personsRepository.deletePerson(delPerson));
+		
 		
 		System.out.println("*** Test DB Ende ***");
 		

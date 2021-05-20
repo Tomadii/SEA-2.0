@@ -42,4 +42,8 @@ public class Person extends IdCounter {
 		this.salutation = Salutation.fromString(string);
 	}
 	
+	public void setSalutation(final Short s) {
+		this.salutation = Salutation.fromShort(s);
+	}
+	
 }
