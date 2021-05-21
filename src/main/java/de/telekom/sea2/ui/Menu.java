@@ -66,10 +66,6 @@ public class Menu implements Closeable {
 		System.out.println("Personen ID eingeben:");
 		try {
 			person = getPerson(Long.parseLong(inputMenu()));
-		} catch (NumberFormatException e) {
-			System.out.println("*************************************************");
-			System.out.println("* Falsche Eingabe! Nur Frau/Mann/Divers erlaubt *");
-			System.out.println("*************************************************");
 		} catch (SQLException e) {
 			System.out.println("Es gibt keine Person mit der ID");
 		}
