@@ -46,6 +46,7 @@ public class SeminarApp {
 			System.out.println("* class MariaDB ist nicht vorhanden *");
 			System.out.println("*************************************");
 			System.out.println(e);
+			return;
 		}
 		try {
 			this.connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/seadb","seauser","seapass");
