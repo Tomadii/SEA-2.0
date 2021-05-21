@@ -20,4 +20,9 @@ public class IdCounter {
 		}
 	}
 	
+	public static void setIdCounter(long id) {
+		if (idCounter <= id) {
+			idCounter = ++id;
+		}
+	}
 }

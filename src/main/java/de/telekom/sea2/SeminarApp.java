@@ -3,9 +3,11 @@ package de.telekom.sea2;
 import java.sql.*;
 import java.util.ArrayList;
 
+import de.telekom.sea2.model.IdCounter;
 import de.telekom.sea2.model.Person;
 import de.telekom.sea2.persistence.PersonsRepository;
-
+import de.telekom.sea2.ui.Menu;
+	
 public class SeminarApp {
 	
 	public static SeminarApp theInstance;
@@ -26,24 +28,54 @@ public class SeminarApp {
 	public void run(String[] args) throws ClassNotFoundException, SQLException {
 		
 		dbloader();
-//		menu();
-		testdb();
+		menu();
+//		testdb();
+		dbclose();
 		
 	}
 	
-	private void dbloader() throws ClassNotFoundException, SQLException {
+	private void dbloader() {
 		
 		System.out.println("*** Datenbank verbinden ***");
 		
 		final String DRIVER = "org.mariadb.jdbc.Driver";
-		Class.forName(DRIVER);
-		this.connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/seadb","seauser","seapass");
-		personsRepository = new PersonsRepository(connection);
-		
-		System.out.println("*** Datenbank verbunden ***");
+		try {
+			Class.forName(DRIVER);
+		} catch (ClassNotFoundException e) {
+			System.out.println("*************************************");
+			System.out.println("* class MariaDB ist nicht vorhanden *");
+			System.out.println("*************************************");
+			System.out.println(e);
+		}
+		try {
+			this.connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/seadb","seauser","seapass");
+			personsRepository = new PersonsRepository(connection);
+			IdCounter.setIdCounter(personsRepository.maxId());
+		} catch (SQLException e) {
+			System.out.println("**********************************************");
+			System.out.println("* Auf Datenbank kann nich zugegriffen werden *");
+			System.out.println("**********************************************");
+			System.out.println(e);
+		}
 	}
+	
+	private void menu() {
 		
+		try (Menu menu = new Menu(personsRepository)) {
+			
+			menu.keepAsking();
+			
+		} catch (SQLException e) {
+			System.out.println("**********************************************");
+			System.out.println("* Auf Datenbank kann nich zugegriffen werden *");
+			System.out.println("**********************************************");
+			System.out.println(e);
+		}
+		
+	}
+	
 	private void testdb() throws ClassNotFoundException, SQLException {
+
 		
 		System.out.println("*** Start Test DB ***");
 		
@@ -104,4 +136,20 @@ public class SeminarApp {
 		System.out.println("*** Test DB Ende ***");
 		
 	}
+	
+	private void dbclose() {
+		
+		System.out.println("*** Datenbank trennen ***");
+		
+		try {
+			connection.close();
+		} catch (SQLException e) {
+			System.out.println("**********************************************");
+			System.out.println("* Auf Datenbank kann nich zugegriffen werden *");
+			System.out.println("**********************************************");
+			System.out.println(e);
+		}
+		
+	}
+	
 }
