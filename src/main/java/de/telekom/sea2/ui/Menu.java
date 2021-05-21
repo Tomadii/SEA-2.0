@@ -61,7 +61,7 @@ public class Menu implements Closeable {
 		}
 	}
 	
-	Person getPerson() throws SQLException  {
+	Person getPerson() {
 		Person person = new Person();
 		System.out.println("Personen ID eingeben:");
 		try {
@@ -70,6 +70,8 @@ public class Menu implements Closeable {
 			System.out.println("*************************************************");
 			System.out.println("* Falsche Eingabe! Nur Frau/Mann/Divers erlaubt *");
 			System.out.println("*************************************************");
+		} catch (SQLException e) {
+			System.out.println("Es gibt keine Person mit der ID");
 		}
 		return person;
 	}
