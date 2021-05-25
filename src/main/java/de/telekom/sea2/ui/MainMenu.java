@@ -1,7 +1,5 @@
 package de.telekom.sea2.ui;
 
-import java.sql.SQLException;
-
 import de.telekom.sea2.persistence.PersonsRepository;
 
 public class MainMenu extends Menu {
