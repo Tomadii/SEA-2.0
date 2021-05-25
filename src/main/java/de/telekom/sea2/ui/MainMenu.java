@@ -28,11 +28,11 @@ public class MainMenu extends Menu {
 		System.out.println("Bitte wählen Sie aus!");
 	}
 	
-	void checkMenu(final String input) throws SQLException {	
+	void checkMenu(final String input) {	
 		switch(input) {
 			case "1": 
 				System.out.println("Du hast 1 gewählt!");
-				inputPerson(); // person anlegen
+				inputPerson();
 				break;
 			case "2": 
 				System.out.println("Du hast 2 gewählt!");

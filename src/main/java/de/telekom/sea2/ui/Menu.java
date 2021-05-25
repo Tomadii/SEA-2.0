@@ -24,7 +24,7 @@ public class Menu implements Closeable {
 		this.scanner = new java.util.Scanner(System.in);
 	}
 	
-	public void keepAsking() throws SQLException { 				// public - haelt die Schleife bis zum Abbruch am Leben 
+	public void keepAsking() { 
 		mainMenu = new MainMenu(perRepo);
 		String result;
 		
@@ -35,11 +35,11 @@ public class Menu implements Closeable {
 		} while( !result.equals("exit"));
 	}
 		
-	String inputMenu() { 				// privat - nimmt die Usereingabe entgegen -> scanner
+	String inputMenu() { 
 		return scanner.nextLine();
 	}
 	
-	void inputPerson() throws SQLException {
+	void inputPerson() {
 		Person person = new Person();
 		System.out.println("Anrede eingeben: ");
 		try {
@@ -54,11 +54,16 @@ public class Menu implements Closeable {
 		person.setFirstname(inputMenu());
 		System.out.println("Nachname eingeben: ");
 		person.setLastname(inputMenu());
-		if (perRepo.create(person)) {
-			System.out.println("Teilnehmer wurde erfolgreich angelegt.");
-		} else {
-			System.out.println("Teilnehmer wurde nicht angelegt!");
-		}
+		try {
+			if (perRepo.create(person)) {
+				System.out.println("Teilnehmer wurde erfolgreich angelegt.");
+			}
+		} catch (SQLException e) {
+			System.out.println("*************************************");
+			System.out.println("* Person kann nicht angelegt werden *");
+			System.out.println("*************************************");
+			e.printStackTrace();
+		} 
 	}
 	
 	Person getPerson() {
@@ -75,13 +80,20 @@ public class Menu implements Closeable {
 	Person getPerson(long id) throws SQLException {
 		Person person = new Person();
 		person = perRepo.get(id);
-		System.out.println(person.getId() + " " + person.getSalutation() + " " + person.getFirstname() + " " + person.getLastname());
+		System.out.println(String.format("%d %s %s %s", person.getId(), person.getSalutation(), person.getFirstname(), person.getLastname()));
 		return person;
 	}
 	
-	void updatePerson() throws SQLException {
+	void updatePerson() {
 		updatePerson = new UpdatePerson(perRepo);
-		updatePerson.update();
+		try {
+			updatePerson.update();
+		} catch (SQLException e) {
+			System.out.println("*************************************");
+			System.out.println("* Person kann nicht geändert werden *");
+			System.out.println("*************************************");
+			e.printStackTrace();
+		}
 	}
 	
 	void deletePerson() {
@@ -132,7 +144,8 @@ public class Menu implements Closeable {
 	
 	@Override
 	public void close() {
-		scanner.close();		
+		scanner.close();
+		
 	}
 	
 }

@@ -40,13 +40,11 @@ public class UpdatePerson extends Menu {
 					if (perRepo.update(person)) {
 						System.out.println(person.getId() + " " + person.getSalutation() + " " + person.getFirstname() + " " + person.getLastname());
 						System.out.println("Teilnehmer wurde erfolgreich geändert.");
-					} else {
-						System.out.println("Teilnehmer wurde nicht geändert!");
 					}
 				} catch (SQLException e) {
-					System.out.println("**********************************************");
-					System.out.println("* Auf Datenbank kann nich zugegriffen werden *");
-					System.out.println("**********************************************");
+					System.out.println("*******************************************");
+					System.out.println("* Teilnehmer konnte nicht geändert werden *");
+					System.out.println("*******************************************");
 					System.out.println(e);
 				}
 				input = "A";

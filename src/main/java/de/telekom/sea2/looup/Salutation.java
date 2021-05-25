@@ -18,6 +18,9 @@ public enum Salutation {
 				return HERR;
 			case "DIVERS":
 			case "D":
+			case "OTHER":
+			case "OTHERS":
+			case "O":
 				return DIVERS;
 			default:
 				throw new IllegalArgumentException("Unerwarteter Wert: " + string);
