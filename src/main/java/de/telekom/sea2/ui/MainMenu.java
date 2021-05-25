@@ -18,7 +18,7 @@ public class MainMenu extends Menu {
 //		System.out.println("6. Suchliste anzeigen");
 		System.out.println("7. Personenliste anzeigen");
 		System.out.println("8. Personenliste löschen");
-//		System.out.println("9. Testpersonen generieren");
+		System.out.println("9. Testpersonen generieren");
 //		System.out.println("10. Liste in Datei speichern");
 //		System.out.println("11. Liste aus Datei importieren");
 		System.out.println("exit um Eingabe zu verlassen");
@@ -60,7 +60,11 @@ public class MainMenu extends Menu {
 				System.out.println("Du hast 8 gewählt!");
 				deleteAll();
 				break;
-			case "9": 
+			case "9":
+				System.out.println("Du hast 9 gewählt!");
+				testData();
+				break;
+			case "10": 
 				System.out.println("Du hast 9 gewählt!");
 //				listImport();
 				break;

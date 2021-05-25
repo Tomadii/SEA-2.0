@@ -142,6 +142,20 @@ public class Menu implements Closeable {
 		}
 	}
 	
+	void testData() {
+		TestData testData = new TestData(perRepo);
+		try {
+			if (testData.starWars()) {
+				System.out.println("Testdaten in DB geschieben");
+			}
+		} catch (SQLException e) {
+			System.out.println("**********************************************");
+			System.out.println("* Auf Datenbank kann nich zugegriffen werden *");
+			System.out.println("**********************************************");
+			System.out.println(e);
+		}
+	}
+	
 	@Override
 	public void close() {
 		scanner.close();
