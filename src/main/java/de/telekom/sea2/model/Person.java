@@ -2,11 +2,12 @@ package de.telekom.sea2.model;
 
 import de.telekom.sea2.looup.Salutation;
 
-public class Person extends IdCounter {
+public class Person {
 
 	private String firstname;
 	private String lastname;
 	private Salutation salutation;
+	private long id;
 
 	public Person() {
 		
@@ -19,7 +20,7 @@ public class Person extends IdCounter {
 	}
 	
 	public Person(final long id, final String salutation, final String firstname, final String lastname) {
-		setId(id);
+		this.id = id;
 		this.firstname = firstname;
 		this.lastname = lastname;
 		this.salutation = Salutation.fromString(salutation);		
@@ -51,6 +52,14 @@ public class Person extends IdCounter {
 	
 	public void setSalutation(final Short s) {
 		this.salutation = Salutation.fromShort(s);
+	}
+
+	public long getId() {
+		return id;
+	}
+	
+	public void setId(long id) {
+		this.id = id;
 	}
 	
 }

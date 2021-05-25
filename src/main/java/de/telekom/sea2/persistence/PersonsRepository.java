@@ -7,17 +7,29 @@ import de.telekom.sea2.model.Person;
 
 public class PersonsRepository {
 	
+	final static String DRIVER = "org.mariadb.jdbc.Driver";
+	final static String URL = "jdbc:mysql://localhost:3306/seadb?user=seauser&password=seapass";
 	private Connection connection;
-	private Statement statement;
 	
-	public PersonsRepository(Connection connection) throws SQLException {
-		this.connection = connection;
-		statement = this.connection.createStatement();
+	public PersonsRepository() throws SQLException, ClassNotFoundException {
+		Class.forName(DRIVER);
+		this.connection = DriverManager.getConnection(URL);
 	}
 	
 	public boolean create(Person person) throws SQLException {
-		PreparedStatement preparedStatement = connection.prepareStatement("insert into personen (ID, ANREDE, VORNAME, NACHNAME) VALUES ( ?, ?, ?, ? )");
-			preparedStatement.setLong(1, person.getId());
+		String query = "insert into personen (ID, ANREDE, VORNAME, NACHNAME) VALUES ( ?, ?, ?, ? )";
+		long id;
+		if (person.getId() == 0) { 
+			id = maxId() +1;
+		} else {
+			if (countId(person.getId()) == 0) {
+				id = person.getId();
+			} else {
+				return false;
+			}
+		}
+		PreparedStatement preparedStatement = connection.prepareStatement(query);
+			preparedStatement.setLong(1, id);
 			preparedStatement.setShort(2, person.getSalutation().toShort());
 			preparedStatement.setString(3, person.getFirstname());
 			preparedStatement.setString(4, person.getLastname());
@@ -26,7 +38,8 @@ public class PersonsRepository {
 	}
 	
 	public boolean update(Person person) throws SQLException {
-		PreparedStatement preparedStatement = connection.prepareStatement("update personen set anrede=?, vorname=?, nachname=? where id=? ");
+		String query = "update personen set anrede=?, vorname=?, nachname=? where id=? ";
+		PreparedStatement preparedStatement = connection.prepareStatement(query);
 			preparedStatement.setShort(1, person.getSalutation().toShort());
 			preparedStatement.setString(2, person.getFirstname());
 			preparedStatement.setString(3, person.getLastname());
@@ -36,7 +49,8 @@ public class PersonsRepository {
 	}
 
 	public Person get(long id) throws SQLException {
-		PreparedStatement preparedStatement = connection.prepareStatement("select * from personen where id=? ");
+		String query = "select * from personen where id=? ";
+		PreparedStatement preparedStatement = connection.prepareStatement(query);
 			preparedStatement.setLong(1, id);
 		
 		ResultSet resultSet = preparedStatement.executeQuery();
@@ -51,7 +65,9 @@ public class PersonsRepository {
 	}
 	
 	public ArrayList<Person> getAll() throws SQLException {
-		ResultSet resultSet = statement.executeQuery( "select * from personen");
+		String query = "select * from personen";
+		Statement statement = connection.createStatement();
+		ResultSet resultSet = statement.executeQuery(query);
 		
 		ArrayList<Person> persons = new ArrayList<Person>();
 		Person person;
@@ -68,7 +84,8 @@ public class PersonsRepository {
 	}
 	
 	public boolean deleteId(long id) throws SQLException {
-		PreparedStatement preparedStatement = connection.prepareStatement("delete from personen where id = ? ");
+		String query = "delete from personen where id = ?";
+		PreparedStatement preparedStatement = connection.prepareStatement(query);
 			preparedStatement.setLong(1, id);
 			preparedStatement.execute();
 		return true;
@@ -79,14 +96,26 @@ public class PersonsRepository {
 	}
 	
 	public boolean deleteAll() throws SQLException {
-		statement.executeQuery( "delete from personen");
+		String query = "delete from personen";
+		Statement statement = connection.createStatement();
+		statement.execute(query);
 		return true;
 	}
 	
-	public long maxId() throws SQLException {
-		ResultSet resultSet = statement.executeQuery( "select max(id) from personen" );
+	private long maxId() throws SQLException {
+		String query = "select max(id) from personen";
+		Statement statement = connection.createStatement();
+		ResultSet resultSet = statement.executeQuery(query);
 		resultSet.next();
 		return resultSet.getLong(1);
 	}
 	
+	private long countId(long id) throws SQLException {
+		String query = "SELECT COUNT(id) FROM personen WHERE id = ?";
+		PreparedStatement preparedStatement = connection.prepareStatement(query);
+			preparedStatement.setLong(1, id);
+		ResultSet resultSet = preparedStatement.executeQuery();
+		resultSet.next();
+		return resultSet.getLong(1);
+	}
 }
