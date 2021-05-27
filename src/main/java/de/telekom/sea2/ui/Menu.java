@@ -6,13 +6,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import de.telekom.sea2.io.ListWriter;
+import de.telekom.sea2.io.*;
 import de.telekom.sea2.model.Person;
 import de.telekom.sea2.persistence.PersonsRepository;
 
 public class Menu implements Closeable {
 
 	private Scanner scanner;
+	private TestData testData;
+	private ListReader listReader;
 	PersonsRepository perRepo; 
 	MainMenu mainMenu;
 	UpdatePerson updatePerson;
@@ -46,10 +48,11 @@ public class Menu implements Closeable {
 		System.out.println("Anrede eingeben: ");
 		try {
 			person.setSalutation(inputMenu());
-		} catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException e) {
 			System.out.println("************************************************");
 			System.out.println("* Flasche Eingabe nur Frau/Mann/Divers erlaubt *");
 			System.out.println("************************************************");
+			System.out.println(e);
 			return;
 		}
 		System.out.println("Vorname eingeben: ");
@@ -64,7 +67,7 @@ public class Menu implements Closeable {
 			System.out.println("*************************************");
 			System.out.println("* Person kann nicht angelegt werden *");
 			System.out.println("*************************************");
-			e.printStackTrace();
+			System.out.println(e);
 		} 
 	}
 	
@@ -94,7 +97,7 @@ public class Menu implements Closeable {
 			System.out.println("*************************************");
 			System.out.println("* Person kann nicht geändert werden *");
 			System.out.println("*************************************");
-			e.printStackTrace();
+			System.out.println(e);
 		}
 	}
 	
@@ -106,6 +109,7 @@ public class Menu implements Closeable {
 			System.out.println("******************************");
 			System.out.println("* Keine gülige ID eingegeben *");
 			System.out.println("******************************");
+			System.out.println(e);
 		} catch (SQLException e) {
 			System.out.println("**********************************************");
 			System.out.println("* Auf Datenbank kann nich zugegriffen werden *");
@@ -145,7 +149,7 @@ public class Menu implements Closeable {
 	}
 	
 	void testData() {
-		TestData testData = new TestData(perRepo);
+		testData = new TestData(perRepo);
 		try {
 			if (testData.starWars()) {
 				System.out.println("Testdaten in DB geschieben");
@@ -156,14 +160,14 @@ public class Menu implements Closeable {
 			System.out.println("**********************************************");
 			System.out.println(e);
 		}
-		testData.close();
 	}
 	
 	void listAllExport() {
 		try {
 			ArrayList<Person> persons = perRepo.getAll();
-			ListWriter list = new ListWriter();
-			list.writeList(persons);
+			try ( ListWriter list = new ListWriter() ) {
+				list.writeList(persons);
+			}
 		} catch (SQLException e) {
 			System.out.println("**********************************************");
 			System.out.println("* Auf Datenbank kann nich zugegriffen werden *");
@@ -178,9 +182,29 @@ public class Menu implements Closeable {
 		
 	}
 	
+	void listImport() {
+		listReader = new ListReader();
+		try {
+			ArrayList<Person> persons = listReader.readList();
+			for ( int i = 0; i < persons.size(); i++) {
+				perRepo.create(persons.get(i));
+			}
+		} catch (IOException e) {
+			System.out.println("************************************");
+			System.out.println("* Datei kann nicht geöffnet werden *");
+			System.out.println("************************************");
+			System.out.println(e);
+		} catch (SQLException e) {
+			System.out.println("*************************************");
+			System.out.println("* Person kann nicht angelegt werden *");
+			System.out.println("*************************************");
+			System.out.println(e);
+		}
+	}
+	
 	@Override
 	public void close() {
-		scanner.close();		
+		scanner.close();
 	}
 	
 }

@@ -1,5 +1,6 @@
 package de.telekom.sea2;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 import de.telekom.sea2.persistence.PersonsRepository;
@@ -21,10 +22,10 @@ public class SeminarApp {
 		return theInstance;
 	}
 	
-	public void run(String[] args) throws SQLException {
+	public void run(String[] args) throws SQLException, IOException {
 		
 		dbloader();
-		test();
+//		test();
 		menu();
 		
 	}
