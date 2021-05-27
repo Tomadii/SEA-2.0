@@ -4,7 +4,8 @@ public enum Salutation {
 
 	FRAU,
 	HERR,
-	DIVERS;
+	DIVERS,
+	NN;
 	
 	public static Salutation fromString(String string) {
 		switch (string.toUpperCase()) {
@@ -22,6 +23,9 @@ public enum Salutation {
 			case "OTHERS":
 			case "O":
 				return DIVERS;
+			case "":
+			case "NN":
+				return NN;
 			default:
 				throw new IllegalArgumentException("Unerwarteter Wert: " + string);
 		
@@ -36,6 +40,8 @@ public enum Salutation {
 				return HERR;
 			case 3:
 				return DIVERS;
+			case 4:
+				return NN;
 			default:
 				throw new IllegalArgumentException("Unerwarteter Wert: " + s);
 		
@@ -51,6 +57,8 @@ public enum Salutation {
 				return "Herr";
 			case DIVERS:
 				return "Divers";
+			case NN:
+				return "NN";
 			default:
 				throw new IllegalArgumentException("Unerwarteter Fall");
 		}
@@ -64,6 +72,8 @@ public enum Salutation {
 			return 2;
 		case DIVERS:
 			return 3;
+		case NN:
+			return 4;
 		default:
 			throw new IllegalArgumentException("Unerwarteter Fall");
 		}
