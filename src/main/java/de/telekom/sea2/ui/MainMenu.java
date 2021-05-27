@@ -19,7 +19,7 @@ public class MainMenu extends Menu {
 		System.out.println("7. Personenliste anzeigen");
 		System.out.println("8. Personenliste löschen");
 		System.out.println("9. Testpersonen generieren");
-//		System.out.println("10. Liste in Datei speichern");
+		System.out.println("10. Liste in Datei speichern");
 //		System.out.println("11. Liste aus Datei importieren");
 		System.out.println("exit um Eingabe zu verlassen");
 		System.out.println("");
@@ -65,8 +65,8 @@ public class MainMenu extends Menu {
 				testData();
 				break;
 			case "10": 
-				System.out.println("Du hast 9 gewählt!");
-//				listImport();
+				System.out.println("Du hast 10 gewählt!");
+				listAllExport();
 				break;
 			case "exit": System.out.println("Du hast exit gewählt");  // Fehler mit "4" beseitigt gegen "Q"
 				break;

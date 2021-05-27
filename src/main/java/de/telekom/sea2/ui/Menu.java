@@ -1,10 +1,12 @@
 package de.telekom.sea2.ui;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import de.telekom.sea2.io.ListWriter;
 import de.telekom.sea2.model.Person;
 import de.telekom.sea2.persistence.PersonsRepository;
 
@@ -154,12 +156,31 @@ public class Menu implements Closeable {
 			System.out.println("**********************************************");
 			System.out.println(e);
 		}
+		testData.close();
+	}
+	
+	void listAllExport() {
+		try {
+			ArrayList<Person> persons = perRepo.getAll();
+			ListWriter list = new ListWriter();
+			list.writeList(persons);
+		} catch (SQLException e) {
+			System.out.println("**********************************************");
+			System.out.println("* Auf Datenbank kann nich zugegriffen werden *");
+			System.out.println("**********************************************");
+			System.out.println(e);
+		} catch (IOException e) {
+			System.out.println("*****************************************");
+			System.out.println("* Datei könnte nicht gespeichert werden *");
+			System.out.println("*****************************************");
+			System.out.println(e);
+		}
+		
 	}
 	
 	@Override
 	public void close() {
-		scanner.close();
-		
+		scanner.close();		
 	}
 	
 }
