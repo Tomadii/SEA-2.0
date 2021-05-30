@@ -16,7 +16,7 @@ public class PersonsRepository {
 		this.connection = DriverManager.getConnection(URL);
 	}
 	
-	public boolean create(Person person) throws SQLException {
+	public Person create(Person person) throws SQLException {
 		String query = "insert into personen (ID, ANREDE, VORNAME, NACHNAME) VALUES ( ?, ?, ?, ? )";
 		long id;
 		if (person.getId() == 0) { 
@@ -25,7 +25,7 @@ public class PersonsRepository {
 			if (countId(person.getId()) == 0) {
 				id = person.getId();
 			} else {
-				return false;
+				return null;
 			}
 		}
 		PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -34,7 +34,7 @@ public class PersonsRepository {
 			preparedStatement.setString(3, person.getFirstname());
 			preparedStatement.setString(4, person.getLastname());
 			preparedStatement.execute();
-		return true;
+		return get(id);
 	}
 	
 	public boolean update(Person person) throws SQLException {
@@ -62,6 +62,34 @@ public class PersonsRepository {
 			person.setLastname(resultSet.getString(4));
 		
 		return person;
+	}
+	
+	public ArrayList<Person> searchDB(String column, String search) throws SQLException {
+		String query = "SELECT * FROM personen WHERE " + column + "='" + search + "'";
+//		String query = "SELECT * FROM personen WHERE " + column + " ='?'";
+		
+//		PreparedStatement preparedStatement = connection.prepareStatement(query);
+//		preparedStatement.setString(1, column);
+//		preparedStatement.setString(1, search);
+		
+		Statement statement = connection.createStatement();
+		
+		ResultSet resultSet = statement.executeQuery(query);
+		
+//		ResultSet resultSet = preparedStatement.executeQuery(query);
+		
+		ArrayList<Person> selectPersons = new ArrayList<Person>();
+		Person person;
+		
+		while (resultSet.next()) {
+			person = new Person();
+			person.setId(resultSet.getLong(1));
+			person.setSalutation(resultSet.getShort(2));
+			person.setFirstname(resultSet.getString(3));
+			person.setLastname(resultSet.getString(4));
+			selectPersons.add(person);
+		}
+		return selectPersons;
 	}
 	
 	public ArrayList<Person> getAll() throws SQLException {

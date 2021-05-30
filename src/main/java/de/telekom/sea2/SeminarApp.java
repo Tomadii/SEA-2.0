@@ -2,6 +2,7 @@ package de.telekom.sea2;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import de.telekom.sea2.persistence.PersonsRepository;
 import de.telekom.sea2.ui.Menu;
@@ -51,27 +52,35 @@ public class SeminarApp {
 	
 	private void menu() {
 		
-		Menu menu = new Menu(perRepo);
-		menu.keepAsking();
-		menu.close();
-		
+		try (Menu menu = new Menu(perRepo)) {
+			menu.keepAsking();
+		}	
 	}
 	
 	private void test() throws SQLException {
 
 		System.out.println("*** Start Test ***");
 		
-		Person person = new Person (2L, "O", "Heinz", "Meyer");
-		System.out.println(person.getId());
-		System.out.println(person.getFirstname());
-				
-		Person person1 = new Person (5L, "F", "Anna", "Müller");
-		System.out.println(person1.getId());
-		System.out.println(person1.getFirstname());
+		ArrayList<Person> selectPersons = new ArrayList<Person>();
+		selectPersons = perRepo.searchDB("nachname", "Skywalker");
 		
-		System.out.println(perRepo.create(person));
-		System.out.println(perRepo.create(person1));
+		for ( int i = 0; i < selectPersons.size(); i++) {
+			System.out.println(selectPersons.get(i).getId());
+			System.out.println(selectPersons.get(i).getFirstname());
+			System.out.println(selectPersons.get(i).getLastname());
+		}
 		
+//		Person person = new Person (2L, "O", "Heinz", "Meyer");
+//		System.out.println(person.getId());
+//		System.out.println(person.getFirstname());
+//				
+//		Person person1 = new Person (5L, "F", "Anna", "Müller");
+//		System.out.println(person1.getId());
+//		System.out.println(person1.getFirstname());
+//		
+//		System.out.println(perRepo.create(person));
+//		System.out.println(perRepo.create(person1));
+//		
 //		System.out.println("*** Start Test DB ***");
 //		
 //		// deleteAll
@@ -120,12 +129,12 @@ public class SeminarApp {
 //		System.out.println("--- deleteId(long) ---");
 //		
 //		long del = 5L;
-////		System.out.println("Person " + del + " gelöscht = " + personsRepository.deleteId(del));
+//		System.out.println("Person " + del + " gelöscht = " + personsRepository.deleteId(del));
 //		
 //		// deletePerson(Person)
 //		System.out.println("--- deletePerson(Person) ---");
 //		
-////		System.out.println("Person " + delPerson + " gelöscht = " + personsRepository.deletePerson(delPerson));
+//		System.out.println("Person " + delPerson + " gelöscht = " + personsRepository.deletePerson(delPerson));
 //		
 //				
 //		System.out.println("*** Test DB Ende ***");
