@@ -6,23 +6,50 @@ import de.telekom.sea2.persistence.PersonsRepository;
 
 public class UpdatePerson extends Menu {
 	
+	private Person person;
+	private String result;
+	
 	public UpdatePerson(PersonsRepository perRepo) {
 		super(perRepo);
 	}
-
-	Person update() throws SQLException {
-		Person person = new Person();
+	
+	public String openMenu() throws SQLException {
+		boolean loop = true;
 		person = getPerson();
-		String input;
-		do {
-		System.out.println("Was möchten Sie ändern:");
-		System.out.println("1. Anrede");
-		System.out.println("2. Vornamen");
-		System.out.println("3. Nachnamen");
-		System.out.println("S. zum Speichen");
-		System.out.println("A. zum abbrechen");
-		input = inputMenu();
-		switch (input) {
+		if (person.getId() != 0L) {
+			
+			do {
+				ausgabePerson(person);
+				showMenu();
+				result = super.inputMenu();
+				checkMenu(result);
+				if (result.equals("e") || result.equals("z")) {
+					loop = false;
+				}
+			} while( loop);
+			if (result.equals("e")) {
+				return result;
+			}
+		}
+		return "0";
+	}
+
+	void showMenu() {
+		System.out.println("┌───────────────────────────────────┐");
+		System.out.println("│            Update Menu            │");
+		System.out.println("├───┬───────────────────────────────┤");
+		System.out.println("│ 1 │ Anrede ändern                 │");
+		System.out.println("│ 2 │ Vornamen ändern               │");
+		System.out.println("│ 3 │ Nachnamen ändern       	    │");
+		System.out.println("├───┼───────────────────────────────┤");
+		System.out.println("│ s │ Speichern und ins Hauptmenü   │");
+		System.out.println("│ z │ zurück ins Hauptmenü          │");
+		System.out.println("│ e │ zum Beenden                   │");
+		System.out.println("└───┴───────────────────────────────┘");
+	}
+	
+	void checkMenu(final String input) {
+		switch(input) {
 			case "1": 
 				System.out.println("Andere Anrede eingeben");
 				person.setSalutation(inputMenu());
@@ -35,24 +62,29 @@ public class UpdatePerson extends Menu {
 				System.out.println("Neuen Nachnamen eingeben");
 				person.setLastname(inputMenu());
 				break;
-			case "S":
-				try {
-					if (perRepo.update(person)) {
-						System.out.println(person.getId() + " " + person.getSalutation() + " " + person.getFirstname() + " " + person.getLastname());
-						System.out.println("Teilnehmer wurde erfolgreich geändert.");
-					}
-				} catch (SQLException e) {
-					System.out.println("*******************************************");
-					System.out.println("* Teilnehmer konnte nicht geändert werden *");
-					System.out.println("*******************************************");
-					System.out.println(e);
-				}
-				input = "A";
-			case "A":
+			case "s":
+				result = saveUpdate();
+				break;
+			case "z":
+			case "e":
 				break;
 			default:  System.out.println("Du hast was anderes gewählt!");
 		}
-		} while (!input.equals("A"));
-		return person;
 	}
+	
+	private String saveUpdate() {
+		try {
+			perRepo.update(person);
+			System.out.println("Teilnehmer wurde erfolgreich geändert.");
+			ausgabePerson(person);
+			return "z";
+		} catch (SQLException e) {
+			System.out.println("*******************************************");
+			System.out.println("* Teilnehmer konnte nicht geändert werden *");
+			System.out.println("*******************************************");
+			System.out.println(e);
+			return "";
+		}
+	}
+	
 }

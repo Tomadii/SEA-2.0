@@ -17,7 +17,6 @@ public class Menu implements Closeable {
 	private ListReader listReader;
 	PersonsRepository perRepo; 
 	MainMenu mainMenu;
-	UpdatePerson updatePerson;
 	
 	public Menu(PersonsRepository perRepo) {
 		openScanner();
@@ -29,18 +28,31 @@ public class Menu implements Closeable {
 	}
 	
 	public void keepAsking() { 
-		mainMenu = new MainMenu(perRepo);
-		String result;
-		
-		do {
-			mainMenu.showMenu();
-			result = inputMenu();
-			mainMenu.checkMenu(result);
-		} while( !result.equals("exit"));
+		try {
+			mainMenu = new MainMenu(perRepo);
+			mainMenu.openMenu();
+		} catch (SQLException e) {
+			System.out.println("**********************************************");
+			System.out.println("* Auf Datenbank kann nich zugegriffen werden *");
+			System.out.println("**********************************************");
+			System.out.println(e);
+		}
 	}
-		
+	
 	String inputMenu() { 
 		return scanner.nextLine();
+	}
+	
+	public void ausgabePerson(long id) throws SQLException {
+		Person person = getPerson(id);
+		System.out.println(id);
+		if (id != 0) {
+			System.out.println(String.format("%d %s %s %s", person.getId(), person.getSalutation(), person.getFirstname(), person.getLastname()));
+		}
+	}
+	
+	public void ausgabePerson(Person person) throws SQLException {
+		ausgabePerson(person.getId());
 	}
 	
 	void inputPerson() {
@@ -60,8 +72,10 @@ public class Menu implements Closeable {
 		System.out.println("Nachname eingeben: ");
 		person.setLastname(inputMenu());
 		try {
-			if (perRepo.create(person)) {
+			person = perRepo.create(person); 
+			if (person != null) {
 				System.out.println("Teilnehmer wurde erfolgreich angelegt.");
+				ausgabePerson(person.getId());
 			}
 		} catch (SQLException e) {
 			System.out.println("*************************************");
@@ -78,6 +92,8 @@ public class Menu implements Closeable {
 			person = getPerson(Long.parseLong(inputMenu()));
 		} catch (SQLException e) {
 			System.out.println("Es gibt keine Person mit der ID");
+		} catch (NumberFormatException e) {
+			System.out.println("Eingabe ist keine Zahl");
 		}
 		return person;
 	}
@@ -85,40 +101,32 @@ public class Menu implements Closeable {
 	Person getPerson(long id) throws SQLException {
 		Person person = new Person();
 		person = perRepo.get(id);
-		System.out.println(String.format("%d %s %s %s", person.getId(), person.getSalutation(), person.getFirstname(), person.getLastname()));
 		return person;
 	}
 	
-	void updatePerson() {
-		updatePerson = new UpdatePerson(perRepo);
-		try {
-			updatePerson.update();
-		} catch (SQLException e) {
-			System.out.println("*************************************");
-			System.out.println("* Person kann nicht geändert werden *");
-			System.out.println("*************************************");
-			System.out.println(e);
-		}
+	Person getPerson(Person person) throws SQLException {
+		person = getPerson(person.getId());
+		return person;
 	}
 	
 	void deletePerson() {
 		System.out.println("Personen ID eingeben:");
 		try {
-			perRepo.deleteId(Long.parseLong(inputMenu()));
-		} catch (NumberFormatException e) {
+			long id = Long.parseLong(inputMenu());
+			Person person = getPerson(id);
+			if (person.getId() != 0) {
+				ausgabePerson(person);
+				perRepo.deleteId(id);
+				System.out.println("Person erfolgreich gelöscht");
+			}
+		} catch (NumberFormatException | SQLException e) {
 			System.out.println("******************************");
 			System.out.println("* Keine gülige ID eingegeben *");
 			System.out.println("******************************");
-			System.out.println(e);
-		} catch (SQLException e) {
-			System.out.println("**********************************************");
-			System.out.println("* Auf Datenbank kann nich zugegriffen werden *");
-			System.out.println("**********************************************");
-			System.out.println(e);
 		}
 	}
 	
-	void listAll() {
+	ArrayList<Person> listAll() {
 		ArrayList<Person> persons;
 		try {
 			persons = perRepo.getAll();
@@ -128,24 +136,14 @@ public class Menu implements Closeable {
 				System.out.print(persons.get(i).getFirstname() + " ");
 				System.out.println(persons.get(i).getLastname());
 			}
+			return persons;
 		} catch (SQLException e) {
 			System.out.println("**********************************************");
 			System.out.println("* Auf Datenbank kann nich zugegriffen werden *");
 			System.out.println("**********************************************");
 			System.out.println(e);
 		}
-		
-	}
-	
-	void deleteAll() {
-		try {
-			System.out.println("Liste der Personen ist gelöscht = " + perRepo.deleteAll());
-		} catch (SQLException e) {
-			System.out.println("**********************************************");
-			System.out.println("* Auf Datenbank kann nich zugegriffen werden *");
-			System.out.println("**********************************************");
-			System.out.println(e);
-		}
+		return null;
 	}
 	
 	void testData() {
@@ -162,24 +160,15 @@ public class Menu implements Closeable {
 		}
 	}
 	
-	void listAllExport() {
-		try {
-			ArrayList<Person> persons = perRepo.getAll();
-			try ( ListWriter list = new ListWriter() ) {
-				list.writeList(persons);
-			}
-		} catch (SQLException e) {
-			System.out.println("**********************************************");
-			System.out.println("* Auf Datenbank kann nich zugegriffen werden *");
-			System.out.println("**********************************************");
-			System.out.println(e);
+	void listExport(ArrayList<Person> persons) {
+		try ( ListWriter list = new ListWriter() ) {
+			list.writeList(persons);
 		} catch (IOException e) {
 			System.out.println("*****************************************");
 			System.out.println("* Datei könnte nicht gespeichert werden *");
 			System.out.println("*****************************************");
 			System.out.println(e);
 		}
-		
 	}
 	
 	void listImport() {
